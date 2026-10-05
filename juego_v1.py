@@ -11,6 +11,11 @@ django.setup()
 
 from backend.models import Personaje
 
+def hay_colision(xA, yA, anchoA, altoA, xB, yB, anchoB, altoB):
+    solapan_en_x = (xA < xB + anchoB) and (xB < xA + anchoA)
+    solapan_en_y = (yA < yB + altoB) and (yB < yA + altoA)
+    return solapan_en_x and solapan_en_y
+
 p = Personaje.objects.first()
 print(p.x, p.y)
 
@@ -61,5 +66,5 @@ while True:
     c3 = y + personaje.shape[0], x
     c4 = y + personaje.shape[0], x + personaje.shape[1]
     
-    if ((c4[0] > ty and c4[0] < ty + tesoro.shape[0]) or (c2[0] > ty and c2[0] < ty + tesoro.shape[0])) and ((c1[1] > tx and c1[1] < tx + tesoro.shape[1]) or (c3[1] > tx and c3[1] < tx + tesoro.shape[1])):
+    if hay_colision(x,y, personaje.shape[0], personaje.shape[1], tx,ty, tesoro.shape[0], tesoro.shape[1]):
         print("Colision")
