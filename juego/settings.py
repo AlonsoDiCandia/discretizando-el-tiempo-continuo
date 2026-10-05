@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'juego.wsgi.application'
 import dj_database_url
 
 DATABASES = {
-    'default': dj_database_url.config(default=f"postgres://alumno:ldp@localhost:5432/postgres")
+    'default': dj_database_url.config(default=f"postgres://alumno:ldp@host.docker.internal:5432/postgres")
 }
 
 
