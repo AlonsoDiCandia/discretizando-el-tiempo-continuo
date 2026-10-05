@@ -21,5 +21,8 @@ class Personaje:
             y = y - self.velocidad
         elif key == ord("s"):
             y = y + self.velocidad
+            
+        self.x = x
+        self.y = y
 
         return x, y

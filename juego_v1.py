@@ -48,10 +48,11 @@ while True:
     
     cv2.imshow("Juevo v1", img)
 
-    key = cv2.waitKey(500) & 0xFF
+    key = cv2.waitKey(2000) & 0xFF
     if key == ord("q"):
         break
     x, y = mi_personaje.movimiento_personaje(key)
+
     p.x = x
     p.y = y
     p.save()
