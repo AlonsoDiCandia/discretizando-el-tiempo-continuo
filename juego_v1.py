@@ -42,20 +42,25 @@ tx, ty = 600, 250
 while True:
     img = np.full((H, W, 3), 255, dtype=np.uint8)
     # Personaje a la imagen
+    cv2.line(img, (300,227), (300, 400), (100,200,100), 5)
     img[y:y+personaje.shape[0], x:x+personaje.shape[1]] = personaje
     
     img[ty:ty+tesoro.shape[0], tx:tx+tesoro.shape[1]] = tesoro
-    
     cv2.imshow("Juevo v1", img)
 
     key = cv2.waitKey(2000) & 0xFF
     if key == ord("q"):
         break
-    x, y = mi_personaje.movimiento_personaje(key)
 
+    if hay_colision(x,y, personaje.shape[0], personaje.shape[1], tx,ty, tesoro.shape[0], tesoro.shape[1]):
+        print("Colision con tesoro")
+        continue
+    if hay_colision(x,y, personaje.shape[0], personaje.shape[1], 300, 227, 5, 200):
+        print("Colision con la linea")
+        continue
+
+    x, y = mi_personaje.movimiento_personaje(key)
     p.x = x
     p.y = y
     p.save()
     
-    if hay_colision(x,y, personaje.shape[0], personaje.shape[1], tx,ty, tesoro.shape[0], tesoro.shape[1]):
-        print("Colision")
