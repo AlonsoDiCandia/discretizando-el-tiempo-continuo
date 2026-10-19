@@ -10,3 +10,6 @@ class Personaje(models.Model):
     
     def __str__(self):
         return self.nombre
+    
+class PersonajeSeleccionado(models.Model):
+    seleccionado = models.ForeignKey('Personaje', on_delete=models.CASCADE)

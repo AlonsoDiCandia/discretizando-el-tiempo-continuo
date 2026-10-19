@@ -8,10 +8,22 @@
             <!-- Usamos la etiqueta static de Django concatenando la variable de la base de datos -->
             <img class="personaje-img" src="{{item.imagen_url}}" alt="{{ item.nombre }}">
             <div class="personaje-info">
-                <h3 class="personaje-nombre">{{ item.nombre }}</h3>
+                <h3 class="personaje-nombre">{{ item.nombre }} {{item.id}}</h3>
             </div>
         </div>
         {% endfor %}
 
+        {% if personaje_seleccionado %}
+        <div class="seleccionado-section" style="margin-bottom: 30px; text-align: center;">
+            <h2 style="color: #4f46e5; margin-bottom: 10px;">Personaje Seleccionado Actualmente</h2>
+            <div class="personaje-card seleccionado-card" style="max-width: 400px; margin: 0 auto; border: 2px solid #4f46e5;">
+                <div class="personaje-info">
+                    <img class="personaje-img" src="{{ personaje_seleccionado.imagen_url }}" alt="{{ personaje_seleccionado.nombre }}">
+                    <h3 class="personaje-nombre">{{ personaje_seleccionado.nombre }}</h3>
+                </div>
+            </div>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+        {% endif %}
     </div>
 </div>
