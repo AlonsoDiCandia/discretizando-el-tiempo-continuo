@@ -1,0 +1,17 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<div class="personajes-container">
+    <div class="personajes-grid">
+        
+        {% for item in personajes %}
+        <div class="personaje-card">
+            <!-- Usamos la etiqueta static de Django concatenando la variable de la base de datos -->
+            <img class="personaje-img" src="{{item.imagen_url}}" alt="{{ item.nombre }}">
+            <div class="personaje-info">
+                <h3 class="personaje-nombre">{{ item.nombre }}</h3>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
