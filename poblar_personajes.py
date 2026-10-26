@@ -5,7 +5,8 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'juego.settings')
 django.setup()
 
-from backend.models import Personaje
+from django.contrib.auth import get_user_model
+from backend.models import Personaje, PersonajeSeleccionado
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -28,3 +29,13 @@ for nombre, archivo in PERSONAJES.items():
             "imagen": (Path("static") / archivo).as_posix(),
         },
     )
+
+if not PersonajeSeleccionado.objects.exists():
+    PersonajeSeleccionado.objects.create(seleccionado=Personaje.objects.first())
+
+User = get_user_model()
+usuario, _ = User.objects.get_or_create(username="alumno")
+usuario.is_staff = True
+usuario.is_superuser = True
+usuario.set_password("usm1234")
+usuario.save()
