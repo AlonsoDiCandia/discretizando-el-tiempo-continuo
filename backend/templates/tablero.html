@@ -21,9 +21,12 @@
 
 <script>
     const img = document.getElementById("frame");
+    const TECLAS = ["w", "a", "s", "d"];
+    let ultimaTecla = null;
 
     async function cargarFrame() {
-        const res = await fetch("{% url 'generar_imagen' %}");
+        const url = "{% url 'generar_imagen' %}" + "?tecla=" + (ultimaTecla ?? "");
+        const res = await fetch(url);
         const blob = await res.blob();
         const anterior = img.src;
         img.src = URL.createObjectURL(blob);
@@ -31,4 +34,12 @@
     }
 
     cargarFrame();
+
+    document.addEventListener("keydown", (e) => {
+        const tecla = e.key.toLowerCase();
+        if (!TECLAS.includes(tecla)) return;
+        ultimaTecla = tecla;
+        console.log("Tecla:", tecla);
+        cargarFrame();
+    });
 </script>

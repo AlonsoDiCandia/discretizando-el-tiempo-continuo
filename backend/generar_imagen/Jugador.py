@@ -9,13 +9,13 @@ class Jugador:
         x = self.x
         y = self.y
         
-        if key == ord("d"):
+        if key == "d":
             x = x + self.velocidad
-        elif key == ord("a"):
+        elif key == "a":
             x = x - self.velocidad
-        elif key == ord("w"):
+        elif key == "w":
             y = y - self.velocidad
-        elif key == ord("s"):
+        elif key == "s":
             y = y + self.velocidad
             
         self.x = x
@@ -23,7 +23,7 @@ class Jugador:
 
         return x, y
 
-    def hay_colision(xA, yA, anchoA, altoA, xB, yB, anchoB, altoB):
+    def hay_colision(self, xA, yA, anchoA, altoA, xB, yB, anchoB, altoB):
         solapan_en_x = (xA < xB + anchoB) and (xB < xA + anchoA)
         solapan_en_y = (yA < yB + altoB) and (yB < yA + altoA)
         return solapan_en_x and solapan_en_y

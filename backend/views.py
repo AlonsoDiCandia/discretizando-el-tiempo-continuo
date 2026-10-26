@@ -34,6 +34,7 @@ def seleccion_personaje(request):
 def generar_imagen(request):
     p = PersonajeSeleccionado.objects.first().seleccionado
     jugador = Jugador(p)
+    key = request.GET.get("tecla", "")
 
     personaje = cv2.imread(PATH + p.imagen.url)
     personaje = cv2.resize(personaje, (100,100))
@@ -55,17 +56,21 @@ def generar_imagen(request):
     img[ty:ty+tesoro.shape[0], tx:tx+tesoro.shape[1]] = tesoro
 
 
-    # if jugador.hay_colision(x,y, personaje.shape[0], personaje.shape[1], tx,ty, tesoro.shape[0], tesoro.shape[1]):
-    #     print("Colision con tesoro")
+    if jugador.hay_colision(x,y, personaje.shape[0], personaje.shape[1], tx,ty, tesoro.shape[0], tesoro.shape[1]):
+        ok, buffer = cv2.imencode(".jpg", img)
         
-    # if jugador.hay_colision(x,y, personaje.shape[0], personaje.shape[1], 300, 227, 5, 200):
-    #     print("Colision con la linea")
+        return HttpResponse(buffer.tobytes(), content_type="image/jpg")
+        
+    if jugador.hay_colision(x,y, personaje.shape[0], personaje.shape[1], 300, 227, 5, 200):
+        ok, buffer = cv2.imencode(".jpg", img)
+        
+        return HttpResponse(buffer.tobytes(), content_type="image/jpg")
         
 
-    # x, y = jugador.movimiento_personaje(key)
-    # p.x = x
-    # p.y = y
-    # p.save()
+    x, y = jugador.movimiento_personaje(key)
+    p.x = x
+    p.y = y
+    p.save()
 
     ok, buffer = cv2.imencode(".jpg", img)
 
