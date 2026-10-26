@@ -1,31 +1,30 @@
 import os
+from pathlib import Path
 import django
 
-# 1. Configura la variable de entorno apuntando al settings de tu proyecto
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'juego.settings')
-
-# 2. Inicializa Django
 django.setup()
 
 from backend.models import Personaje
 
-p1 = Personaje.objects.get_or_create(
-    nombre = "pepe",
-    x = 50,
-    y = 50,
-    velocidad = 25
-)
+BASE_DIR = Path(__file__).resolve().parent
 
-p2 = Personaje.objects.get_or_create(
-    nombre = "samael",
-    x = 50,
-    y = 50,
-    velocidad = 25
-)
+PERSONAJES = {
+    "pepe": "personaje.png",
+    "samael": "unnamed.jpg",
+    "Don M": "dxcmkj8eb7yic_600.jpg",
+}
 
-p3 = Personaje.objects.get_or_create(
-    nombre = "Don M",
-    x = 50,
-    y = 50,
-    velocidad = 25
-)
+for nombre, archivo in PERSONAJES.items():
+    if not (BASE_DIR / "static" / archivo).exists():
+        raise FileNotFoundError(f"Falta static/{archivo}")
+
+    Personaje.objects.update_or_create(
+        nombre=nombre,
+        defaults={
+            "x": 50,
+            "y": 50,
+            "velocidad": 25,
+            "imagen": (Path("static") / archivo).as_posix(),
+        },
+    )

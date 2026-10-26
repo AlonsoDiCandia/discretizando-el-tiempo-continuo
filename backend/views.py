@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from backend.models import Personaje, PersonajeSeleccionado
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_POST
 from backend.generar_imagen.Jugador import Jugador
 
 import os
@@ -30,6 +31,17 @@ def seleccion_personaje(request):
     ps = PersonajeSeleccionado.objects.first()
     
     return render(request, "seleccion_personaje.html", {"personajes": personajes, "personaje_seleccionado": {"nombre": ps.seleccionado.nombre, "imagen_url": ps.seleccionado.imagen.url}}, )
+
+@require_POST
+def seleccionar_personaje(request, id):
+    personaje = get_object_or_404(Personaje, id=id)
+    ps = PersonajeSeleccionado.objects.first()
+    if ps:
+        ps.seleccionado = personaje
+        ps.save()
+    else:
+        PersonajeSeleccionado.objects.create(seleccionado=personaje)
+    return JsonResponse({"id": personaje.id, "nombre": personaje.nombre})
 
 def generar_imagen(request):
     p = PersonajeSeleccionado.objects.first().seleccionado

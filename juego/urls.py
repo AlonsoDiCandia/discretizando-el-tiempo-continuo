@@ -19,11 +19,12 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from backend.views import seleccion_personaje, generar_imagen, tablero
+from backend.views import seleccion_personaje, seleccionar_personaje, generar_imagen, tablero
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/seleccion-personaje', seleccion_personaje),
+    path('api/seleccionar-personaje/<int:id>', seleccionar_personaje, name='seleccionar_personaje'),
     path('api/generar-imagen', generar_imagen, name='generar_imagen'),
     path('tablero', tablero, name='tablero'),
 ]
