@@ -11,17 +11,11 @@ django.setup()
 
 PATH = os.getcwd()
 
-from backend.models import Personaje as PersonajeDB
+from backend.models import PersonajeSeleccionado
 from backend.generar_imagen.Personaje import Personaje
 
-def hay_colision(xA, yA, anchoA, altoA, xB, yB, anchoB, altoB):
-    solapan_en_x = (xA < xB + anchoB) and (xB < xA + anchoA)
-    solapan_en_y = (yA < yB + altoB) and (yB < yA + altoA)
-    return solapan_en_x and solapan_en_y
-
-p = PersonajeDB.objects.first()
-mi_personaje = Personaje(p)
-print(p.x, p.y)
+p = PersonajeSeleccionado.objects.first()
+mi_personaje = Personaje(p.seleccionado)
 
 W = 1000
 H = 500
@@ -46,7 +40,6 @@ while True:
     img[y:y+personaje.shape[0], x:x+personaje.shape[1]] = personaje
     
     img[ty:ty+tesoro.shape[0], tx:tx+tesoro.shape[1]] = tesoro
-    cv2.imshow("Juevo v1", img)
 
     key = cv2.waitKey(2000) & 0xFF
     if key == ord("q"):

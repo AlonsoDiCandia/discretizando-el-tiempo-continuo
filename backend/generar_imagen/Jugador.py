@@ -1,6 +1,4 @@
-
-
-class Personaje:
+class Jugador:
     def __init__(self, personaje_db):
         self.x = personaje_db.x
         self.y = personaje_db.y
@@ -10,8 +8,6 @@ class Personaje:
     def movimiento_personaje(self, key):
         x = self.x
         y = self.y
-        
-        print(key)
         
         if key == ord("d"):
             x = x + self.velocidad
@@ -26,3 +22,8 @@ class Personaje:
         self.y = y
 
         return x, y
+
+    def hay_colision(xA, yA, anchoA, altoA, xB, yB, anchoB, altoB):
+        solapan_en_x = (xA < xB + anchoB) and (xB < xA + anchoA)
+        solapan_en_y = (yA < yB + altoB) and (yB < yA + altoA)
+        return solapan_en_x and solapan_en_y
