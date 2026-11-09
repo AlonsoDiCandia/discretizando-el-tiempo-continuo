@@ -1,8 +1,8 @@
 class Jugador:
-    def __init__(self, personaje_db):
+    def __init__(self, personaje_db, velocidad=None):
         self.x = personaje_db.x
         self.y = personaje_db.y
-        self.velocidad = personaje_db.velocidad
+        self.velocidad = personaje_db.velocidad if velocidad is None else velocidad
         
         
     def movimiento_personaje(self, key):

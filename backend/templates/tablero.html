@@ -12,6 +12,13 @@
             </div>
             {% endif %}
 
+            <!-- BOTÓN PARA REINICIAR EL LABERINTO -->
+            <div style="margin-bottom: 15px;">
+                <button id="btn-reiniciar" style="background-color: #4f46e5; color: white; border: none; padding: 10px 20px; font-size: 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                    🔄 Reiniciar Laberinto
+                </button>
+            </div>
+
             <div class="personaje-card seleccionado-card" style="width: 75vw; margin: 0 auto; border: 2px solid #4f46e5; padding: 0; overflow: hidden;">
                 <img id="frame" alt="Tablero del juego" style="display: block; width: 100%; height: auto;">
             </div>
@@ -21,25 +28,45 @@
 
 <script>
     const img = document.getElementById("frame");
+    const btnReiniciar = document.getElementById("btn-reiniciar");
     const TECLAS = ["w", "a", "s", "d"];
     let ultimaTecla = null;
 
-    async function cargarFrame() {
-        const url = "{% url 'generar_imagen' %}" + "?tecla=" + (ultimaTecla ?? "");
+    async function cargarFrame(nuevoJuego = false) {
+        let url = "{% url 'generar_imagen' %}" + "?tecla=" + (ultimaTecla ?? "");
+        
+        // Si se solicita un juego nuevo, agregamos el parámetro nuevo_juego=1
+        if (nuevoJuego) {
+            url += "&nuevo_juego=1";
+        }
+
         const res = await fetch(url);
         const blob = await res.blob();
         const anterior = img.src;
         img.src = URL.createObjectURL(blob);
         if (anterior.startsWith("blob:")) URL.revokeObjectURL(anterior);
+        
+        // Limpiamos la última tecla temporalmente para que no se repita el movimiento en el siguiente fetch normal
+        if (nuevoJuego) {
+            ultimaTecla = null;
+        }
     }
 
+    // Carga inicial al entrar a la página
     cargarFrame();
 
+    // Evento del botón de reinicio
+    btnReiniciar.addEventListener("click", () => {
+        ultimaTecla = null;
+        cargarFrame(true); // Envía nuevo_juego=1 al backend
+    });
+
+    // Evento del teclado
     document.addEventListener("keydown", (e) => {
         const tecla = e.key.toLowerCase();
         if (!TECLAS.includes(tecla)) return;
         ultimaTecla = tecla;
         console.log("Tecla:", tecla);
-        cargarFrame();
+        cargarFrame(false); // Movimiento normal sin reiniciar laberinto
     });
 </script>

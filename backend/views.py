@@ -113,33 +113,38 @@ def generar_imagen(request):
         return HttpResponse("No hay personaje seleccionado", status=400)
         
     p = ps.seleccionado
-    jugador = Jugador(p)
+    jugador = Jugador(p, velocidad=int(W / ancho_celda))
     clave = request.GET.get("tecla", "")
     
     # Cargar imagen del personaje
     try:
         personaje = cv2.imread(PATH + p.imagen.url)
-        personaje = cv2.resize(personaje, (int(W / ancho_celda), int(H / alto_celda)))
+        personaje = cv2.resize(personaje, (int(W / ancho_celda) - 2, int(H / alto_celda) - 2))
     except Exception:
         personaje = np.zeros((40, 40, 3), dtype=np.uint8)
 
     # Generar un nuevo laberinto aleatorio en la sesión si no existe o se solicita reiniciar
-    # if 'laberinto' not in request.session or request.GET.get("nuevo_juego") == "1":
-    request.session['laberinto'] = crear_matriz_laberinto(ancho_celda, alto_celda)
-    request.session['pos_x'] = int(W / ancho_celda)  # Posición inicial segura dentro del pasillo
-    request.session['pos_y'] = int(H / alto_celda)
+    if 'laberinto' not in request.session or request.GET.get("nuevo_juego") == "1":
+        request.session['laberinto'] = crear_matriz_laberinto(ancho_celda, alto_celda)
+        request.session['pos_x'] = int(W / ancho_celda)  # Posición inicial segura
+        request.session['pos_y'] = int(H / alto_celda)
 
     laberinto_grid = request.session['laberinto']
 
     # Recuperar posición actual
-    x = request.session.get('pos_x', 20)
-    y = request.session.get('pos_y', 20)
+    x = request.session.get('pos_x', int(W / ancho_celda))
+    y = request.session.get('pos_y', int(H / alto_celda))
     
     # Movimiento del personaje si se presionó tecla
     if clave:
-        x, y = jugador.movimiento_personaje(clave, x, y)
+        x, y = jugador.movimiento_personaje(clave)
         request.session['pos_x'] = x
         request.session['pos_y'] = y
+        
+    # Guardar cambios en el modelo del personaje como lo tenías planeado
+    p.x = x
+    p.y = y
+    p.save()
 
     # Crear lienzo en blanco (Fondo Blanco)
     img = np.full((H, W, 3), 255, dtype=np.uint8)
