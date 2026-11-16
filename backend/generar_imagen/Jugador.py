@@ -18,6 +18,7 @@ class Jugador:
         elif key == "s":
             y = y + self.velocidad
             
+            
         self.x = x
         self.y = y
 

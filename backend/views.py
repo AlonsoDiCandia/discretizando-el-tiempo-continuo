@@ -6,7 +6,7 @@ import numpy as np
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST
-from backend.models import Personaje, PersonajeSeleccionado
+from backend.models import Personaje, PersonajeSeleccionado, Bala
 from backend.generar_imagen.Jugador import Jugador
 
 W = 1000
@@ -124,33 +124,43 @@ def generar_imagen(request):
         personaje = np.zeros((40, 40, 3), dtype=np.uint8)
 
     # Generar un nuevo laberinto aleatorio en la sesión si no existe o se solicita reiniciar
-    if 'laberinto' not in request.session or request.GET.get("nuevo_juego") == "1":
-        request.session['laberinto'] = crear_matriz_laberinto(ancho_celda, alto_celda)
-        request.session['pos_x'] = int(W / ancho_celda)  # Posición inicial segura
-        request.session['pos_y'] = int(H / alto_celda)
+    # if 'laberinto' not in request.session or request.GET.get("nuevo_juego") == "1":
+    #     request.session['laberinto'] = crear_matriz_laberinto(ancho_celda, alto_celda)
+    #     request.session['pos_x'] = int(W / ancho_celda)  # Posición inicial segura
+    #     request.session['pos_y'] = int(H / alto_celda)
 
-    laberinto_grid = request.session['laberinto']
+    # laberinto_grid = request.session['laberinto']
 
     # Recuperar posición actual
-    x = request.session.get('pos_x', int(W / ancho_celda))
-    y = request.session.get('pos_y', int(H / alto_celda))
+    # x = request.session.get('pos_x', int(W / ancho_celda))
+    # y = request.session.get('pos_y', int(H / alto_celda))
     
     # Movimiento del personaje si se presionó tecla
-    if clave:
-        x, y = jugador.movimiento_personaje(clave)
-        request.session['pos_x'] = x
-        request.session['pos_y'] = y
+    # if clave:
+    x, y = jugador.movimiento_personaje(clave)
+    
+
+        # request.session['pos_x'] = x
+        # request.session['pos_y'] = y
         
     # Guardar cambios en el modelo del personaje como lo tenías planeado
     p.x = x
     p.y = y
+    if clave != "b":
+        p.direccion = clave
     p.save()
 
     # Crear lienzo en blanco (Fondo Blanco)
     img = np.full((H, W, 3), 255, dtype=np.uint8)
     
+    rectangulos = [[(550,150), (650, 199)], [(550,201), (650, 249)], [(550,251), (650, 300)]]
+    
+
+    for l in rectangulos:
+        cv2.rectangle(img, l[0], l[1], (0,0,0), -1)
+    
     # Dibujar las líneas/paredes del laberinto aleatorio
-    dibujar_laberinto_en_imagen(img, laberinto_grid)
+    # dibujar_laberinto_en_imagen(img, laberinto_grid)
 
     # Dibujar el tesoro/meta (opcional de referencia)
     tx, ty = 850, 250
@@ -159,7 +169,39 @@ def generar_imagen(request):
     # Dibujar personaje encima
     h_pers, w_pers = personaje.shape[:2]
     img[y:y+h_pers, x:x+w_pers] = personaje
-
+    
+    if clave == "b":
+        cx, cy = ( int(x + (int((W / ancho_celda))/2)), int(y + (int((H / alto_celda))/2)))
+        if p.direccion == "d":
+            cx += int(int((W / ancho_celda))/2)
+        elif p.direccion == "a":
+            cx -= int(int((W / ancho_celda))/2)
+        elif p.direccion == "w":
+            cy -= int(int((H / alto_celda))/2)
+        elif p.direccion == "s":
+            cy += int(int((H / alto_celda))/2)
+        cv2.circle(img, (cx, cy), 3, (255,0,0))
+        Bala.objects.create(
+            x=cx, 
+            y=cy,
+            velocidad = 50, 
+            talla = 3,
+            direccion = p.direccion
+        )
+    
+    for b in Bala.objects.all():
+        if b.direccion == "d":
+            b.x = b.x + b.velocidad
+        elif b.direccion == "a":
+            b.x = b.x - b.velocidad
+        elif b.direccion == "w":
+            b.y = b.y - b.velocidad
+        elif b.direccion == "s":
+            b.y = b.y + b.velocidad
+            
+        b.save()
+        cv2.circle(img, (b.x, b.y), 3, (255,0,0))
+            
     ok, buffer = cv2.imencode(".jpg", img)
     return HttpResponse(buffer.tobytes(), content_type="image/jpeg")
 

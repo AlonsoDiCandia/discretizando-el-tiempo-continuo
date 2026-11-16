@@ -6,6 +6,7 @@ class Personaje(models.Model):
     x = models.IntegerField(default=50)
     y = models.IntegerField(default=50)
     velocidad = models.IntegerField(default=25)
+    direccion = models.CharField(max_length=1)
     imagen = models.ImageField(upload_to='static') # En prod no hacer esto, usar un bucket
     
     def __str__(self):
@@ -19,3 +20,10 @@ class Pared(models.Model):
     y = models.IntegerField(default=50)
     ancho = models.IntegerField(default=50)
     alto = models.IntegerField(default=50)
+
+class Bala(models.Model):
+    x = models.IntegerField(default=50)
+    y = models.IntegerField(default=50)
+    velocidad = models.IntegerField(default=50)
+    talla = models.IntegerField(default=5)
+    direccion = models.CharField(max_length=1)
