@@ -182,6 +182,7 @@ def generar_imagen(request):
             cy += int(int((H / alto_celda))/2)
         cv2.circle(img, (cx, cy), 3, (255,0,0))
         Bala.objects.create(
+            personaje=p,
             x=cx, 
             y=cy,
             velocidad = 50, 
@@ -189,7 +190,7 @@ def generar_imagen(request):
             direccion = p.direccion
         )
     
-    for b in Bala.objects.all():
+    for b in Bala.objects.filter(personaje=p):
         if b.direccion == "d":
             b.x = b.x + b.velocidad
         elif b.direccion == "a":

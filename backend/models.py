@@ -10,7 +10,7 @@ class Personaje(models.Model):
     imagen = models.ImageField(upload_to='static') # En prod no hacer esto, usar un bucket
     
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre} {self.id}"
     
 class PersonajeSeleccionado(models.Model):
     seleccionado = models.ForeignKey('Personaje', on_delete=models.CASCADE)
@@ -22,6 +22,7 @@ class Pared(models.Model):
     alto = models.IntegerField(default=50)
 
 class Bala(models.Model):
+    personaje = models.ForeignKey('Personaje', on_delete=models.CASCADE)
     x = models.IntegerField(default=50)
     y = models.IntegerField(default=50)
     velocidad = models.IntegerField(default=50)
